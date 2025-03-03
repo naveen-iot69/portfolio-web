@@ -1,26 +1,35 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { FaStar, FaCode, FaUsers, FaChartLine, FaTools, FaDatabase, FaTasks } from 'react-icons/fa';
+import { motion } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
 
 const Skills = () => {
-  const skillsRef = useRef(null);
+  const [ref, inView] = useInView({
+    threshold: 0.1,
+    triggerOnce: true
+  });
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
 
-    const skillElements = document.querySelectorAll('.skill-category, .metric-card');
-    skillElements.forEach((element) => observer.observe(element));
-
-    return () => observer.disconnect();
-  }, []);
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut"
+      }
+    }
+  };
 
   const metrics = [
     {
@@ -87,53 +96,129 @@ const Skills = () => {
   };
 
   return (
-    <section id="skills" ref={skillsRef} className="s-skills dark">
-      <div className="skills-container">
-        <div className="section-header">
-          <h2 className="section-title">Professional Expertise</h2>
-          <p className="section-description">
+    <section id="skills" className="s-skills dark">
+      <motion.div
+        ref={ref}
+        className="skills-container"
+        variants={containerVariants}
+        initial="hidden"
+        animate={inView ? "visible" : "hidden"}
+      >
+        <motion.div className="section-header" variants={itemVariants}>
+          <motion.h2 
+            className="section-title"
+            variants={itemVariants}
+          >
+            Professional Expertise
+          </motion.h2>
+          <motion.p 
+            className="section-description"
+            variants={itemVariants}
+          >
             Comprehensive skill set combining technical proficiency, data analytics, and project management
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
-        <div className="metrics-grid">
+        <motion.div 
+          className="metrics-grid"
+          variants={containerVariants}
+        >
           {metrics.map((metric, index) => (
-            <div key={index} className="metric-card">
-              <div className="metric-icon">{metric.icon}</div>
-              <div className="metric-value">{metric.value}</div>
-              <div className="metric-label">{metric.label}</div>
-            </div>
+            <motion.div
+              key={index}
+              className="metric-card"
+              variants={itemVariants}
+              whileHover={{ 
+                scale: 1.05,
+                boxShadow: "0 8px 16px rgba(0,0,0,0.1)"
+              }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <motion.div 
+                className="metric-icon"
+                animate={{ 
+                  rotate: [0, 360],
+                }}
+                transition={{
+                  duration: 20,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+              >
+                {metric.icon}
+              </motion.div>
+              <motion.div 
+                className="metric-value"
+                variants={itemVariants}
+              >
+                {metric.value}
+              </motion.div>
+              <motion.div 
+                className="metric-label"
+                variants={itemVariants}
+              >
+                {metric.label}
+              </motion.div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        <div className="skills-grid">
-          {Object.entries(skillCategories).map(([category, { icon, description, skills }]) => (
-            <div key={category} className="skill-category">
-              <div className="category-header">
-                {icon}
+        <motion.div 
+          className="skills-grid"
+          variants={containerVariants}
+        >
+          {Object.entries(skillCategories).map(([category, { icon, description, skills }], categoryIndex) => (
+            <motion.div
+              key={category}
+              className="skill-category"
+              variants={itemVariants}
+              whileHover={{ 
+                scale: 1.02,
+                boxShadow: "0 8px 16px rgba(0,0,0,0.1)"
+              }}
+            >
+              <motion.div className="category-header">
+                <motion.div
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.6 }}
+                >
+                  {icon}
+                </motion.div>
                 <h3 className="category-title">{category}</h3>
-              </div>
+              </motion.div>
               <p className="category-description">{description}</p>
               <div className="skills-list">
                 {skills.map((skill, index) => (
-                  <div key={index} className="skill-item">
+                  <motion.div
+                    key={index}
+                    className="skill-item"
+                    variants={itemVariants}
+                    custom={index}
+                    whileHover={{ scale: 1.02 }}
+                  >
                     <div className="skill-info">
                       <span className="skill-name">{skill.name}</span>
                       <span className="skill-percentage">{skill.proficiency}%</span>
                     </div>
                     <div className="skill-bar">
-                      <div 
+                      <motion.div 
                         className="skill-progress" 
-                        style={{ width: `${skill.proficiency}%` }}
-                      ></div>
+                        initial={{ width: 0 }}
+                        animate={{ width: `${skill.proficiency}%` }}
+                        transition={{ 
+                          duration: 1,
+                          delay: 0.2 * (categoryIndex + index),
+                          ease: "easeOut"
+                        }}
+                      />
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 };

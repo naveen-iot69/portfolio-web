@@ -1,8 +1,36 @@
 import React, { useState } from 'react';
 import { FaTimes, FaGithub, FaExternalLinkAlt, FaTools } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
 
 const Portfolio = () => {
   const [selectedProject, setSelectedProject] = useState(null);
+  const [ref, inView] = useInView({
+    threshold: 0.1,
+    triggerOnce: true
+  });
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut"
+      }
+    }
+  };
 
   const projects = [
     {
@@ -72,107 +100,259 @@ const Portfolio = () => {
   ];
 
   const ProjectModal = ({ project, onClose }) => (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
-        <button className="modal-close" onClick={onClose}>
+    <motion.div 
+      className="modal-overlay" 
+      onClick={onClose}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <motion.div 
+        className="modal-content" 
+        onClick={e => e.stopPropagation()}
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ 
+          scale: 1, 
+          opacity: 1,
+          transition: {
+            duration: 0.3,
+            ease: "easeOut"
+          }
+        }}
+        exit={{ 
+          scale: 0.8, 
+          opacity: 0,
+          transition: {
+            duration: 0.2,
+            ease: "easeIn"
+          }
+        }}
+      >
+        <motion.button 
+          className="modal-close" 
+          onClick={onClose}
+          whileHover={{ rotate: 90 }}
+          whileTap={{ scale: 0.9 }}
+        >
           <FaTimes />
-        </button>
+        </motion.button>
         
         <div className="modal-header">
-          <h2>{project.title}</h2>
-          <div className="modal-links">
-            <a href={project.link} target="_blank" rel="noopener noreferrer">
+          <motion.h2
+            initial={{ x: -20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            {project.title}
+          </motion.h2>
+          <motion.div 
+            className="modal-links"
+            initial={{ x: 20, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            transition={{ delay: 0.3 }}
+          >
+            <motion.a 
+              href={project.link} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
               <FaExternalLinkAlt /> Live Demo
-            </a>
-            <a href="#" target="_blank" rel="noopener noreferrer">
+            </motion.a>
+            <motion.a 
+              href="#" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
               <FaGithub /> Repository
-            </a>
-          </div>
+            </motion.a>
+          </motion.div>
         </div>
 
-        <div className="modal-body">
-          <div className="project-image">
+        <motion.div 
+          className="modal-body"
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.4 }}
+        >
+          <motion.div 
+            className="project-image"
+            whileHover={{ scale: 1.02 }}
+          >
             <img src={project.image} alt={project.title} />
-          </div>
+          </motion.div>
 
           <div className="project-details">
-            <div className="detail-section">
+            <motion.div 
+              className="detail-section"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
               <h3>Overview</h3>
               <p>{project.fullDescription}</p>
-            </div>
+            </motion.div>
 
-            <div className="detail-section">
+            <motion.div 
+              className="detail-section"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.6 }}
+            >
               <h3>Role & Duration</h3>
               <p><strong>Role:</strong> {project.role}</p>
               <p><strong>Duration:</strong> {project.duration}</p>
-            </div>
+            </motion.div>
 
-            <div className="detail-section">
+            <motion.div 
+              className="detail-section"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.7 }}
+            >
               <h3>Technologies</h3>
               <div className="tech-stack">
                 <FaTools className="tech-icon" />
                 <div className="tech-list">
                   {project.technologies.map((tech, index) => (
-                    <span key={index} className="tech-tag">{tech}</span>
+                    <motion.span 
+                      key={index} 
+                      className="tech-tag"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: 0.8 + index * 0.1 }}
+                      whileHover={{ scale: 1.1 }}
+                    >
+                      {tech}
+                    </motion.span>
                   ))}
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="detail-section">
+            <motion.div 
+              className="detail-section"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.8 }}
+            >
               <h3>Impact & Results</h3>
               <ul className="impact-list">
                 {project.impact.map((impact, index) => (
-                  <li key={index}>{impact}</li>
+                  <motion.li 
+                    key={index}
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.9 + index * 0.1 }}
+                  >
+                    {impact}
+                  </motion.li>
                 ))}
               </ul>
-            </div>
+            </motion.div>
           </div>
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 
   return (
     <section id="portfolio" className="portfolio">
-      <div className="portfolio-container">
-        <h2 className="section-title">Portfolio</h2>
-        <p className="section-description">
+      <motion.div
+        ref={ref}
+        className="portfolio-container"
+        variants={containerVariants}
+        initial="hidden"
+        animate={inView ? "visible" : "hidden"}
+      >
+        <motion.h2 
+          className="section-title"
+          variants={itemVariants}
+        >
+          Portfolio
+        </motion.h2>
+        <motion.p 
+          className="section-description"
+          variants={itemVariants}
+        >
           Showcasing innovative products that drive business growth
-        </p>
+        </motion.p>
 
-        <div className="portfolio-grid">
-          {projects.map(project => (
-            <div 
+        <motion.div 
+          className="portfolio-grid"
+          variants={containerVariants}
+        >
+          {projects.map((project, index) => (
+            <motion.div 
               key={project.id} 
               className="portfolio-item"
+              variants={itemVariants}
+              whileHover={{ 
+                scale: 1.03,
+                boxShadow: "0 8px 16px rgba(0,0,0,0.1)"
+              }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => setSelectedProject(project)}
             >
-              <div className="portfolio-content">
-                <div className="portfolio-image">
+              <motion.div 
+                className="portfolio-content"
+                layoutId={`project-${project.id}`}
+              >
+                <motion.div 
+                  className="portfolio-image"
+                  whileHover={{ scale: 1.05 }}
+                >
                   <img src={project.image} alt={project.title} />
-                </div>
-                <div className="portfolio-info">
-                  <h3>{project.title}</h3>
-                  <p>{project.shortDescription}</p>
-                  <div className="portfolio-tech">
-                    {project.technologies.slice(0, 3).map((tech, index) => (
-                      <span key={index} className="tech-badge">{tech}</span>
+                </motion.div>
+                <motion.div className="portfolio-info">
+                  <motion.h3
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 + index * 0.1 }}
+                  >
+                    {project.title}
+                  </motion.h3>
+                  <motion.p
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.3 + index * 0.1 }}
+                  >
+                    {project.shortDescription}
+                  </motion.p>
+                  <motion.div 
+                    className="portfolio-tech"
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.4 + index * 0.1 }}
+                  >
+                    {project.technologies.slice(0, 3).map((tech, techIndex) => (
+                      <motion.span 
+                        key={techIndex} 
+                        className="tech-badge"
+                        whileHover={{ scale: 1.1 }}
+                      >
+                        {tech}
+                      </motion.span>
                     ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+                  </motion.div>
+                </motion.div>
+              </motion.div>
+            </motion.div>
           ))}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
-      {selectedProject && (
-        <ProjectModal 
-          project={selectedProject} 
-          onClose={() => setSelectedProject(null)} 
-        />
-      )}
+      <AnimatePresence>
+        {selectedProject && (
+          <ProjectModal 
+            project={selectedProject} 
+            onClose={() => setSelectedProject(null)} 
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 };
